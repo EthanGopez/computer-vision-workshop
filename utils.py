@@ -30,7 +30,11 @@ def load_image(path: str) -> np.ndarray:
     Returns:
         ndarray of shape (H, W, 3), dtype uint8.
     """
-    raise NotImplementedError
+    image_array = cv2.imread(path)
+    if image_array is None:
+        raise FileNotFoundError(f"could not find file at {path}")
+    return image_array
+
 
 
 def to_grayscale(img: np.ndarray) -> np.ndarray:
@@ -43,7 +47,8 @@ def to_grayscale(img: np.ndarray) -> np.ndarray:
     Returns:
         ndarray of shape (H, W), dtype uint8.
     """
-    raise NotImplementedError
+    return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
 
 
 def blur_image(gray: np.ndarray, kernel_size: int = 5) -> np.ndarray:
@@ -59,7 +64,7 @@ def blur_image(gray: np.ndarray, kernel_size: int = 5) -> np.ndarray:
     Returns:
         ndarray of same shape as gray, dtype uint8.
     """
-    raise NotImplementedError
+    return cv2.GaussianBlur(gray, (kernel_size,kernel_size), 0)
 
 
 def detect_edges(blurred: np.ndarray,
@@ -76,7 +81,7 @@ def detect_edges(blurred: np.ndarray,
     Returns:
         Binary ndarray of same shape, values 0 or 255.
     """
-    raise NotImplementedError
+    return cv2.Canny( blurred, low_threshold, high_threshold)
 
 
 def preprocess(img: np.ndarray) -> np.ndarray:
@@ -92,7 +97,7 @@ def preprocess(img: np.ndarray) -> np.ndarray:
     Returns:
         Binary edge map, shape (H, W), values 0 or 255.
     """
-    raise NotImplementedError
+    return detect_edges(blurred=blur_image(gray=to_grayscale(img=img)))
 
 
 def find_subject_contour(edges: np.ndarray, min_area: int = 5000):
@@ -108,7 +113,12 @@ def find_subject_contour(edges: np.ndarray, min_area: int = 5000):
     Returns:
         The largest qualifying contour (ndarray of points), or None.
     """
-    raise NotImplementedError
+    (contours, hierarchy) = cv2.findContours(edges, 
+                                             cv2.RETR_EXTERNAL,
+                                             cv2.CHAIN_APPROX_SIMPLE
+                                             )
+    qualifying_contours = [c for c in contours if cv2.contourArea(c) >= min_area]
+    return max(qualifying_contours, key=cv2.contourArea) if qualifying_contours else None
 
 
 def crop_roi(img: np.ndarray, contour) -> tuple:
@@ -127,7 +137,10 @@ def crop_roi(img: np.ndarray, contour) -> tuple:
         roi: Cropped color image, shape (h, w, 3).
         box: Tuple (x, y, w, h) in pixels.
     """
-    raise NotImplementedError
+    # return cv2.boundingRect(contour)
+    x, y, w, h = cv2.boundingRect(contour)
+    roi = img[y:y+h, x:x+w]
+    return roi, (x, y, w, h)
 
 
 # =============================================================

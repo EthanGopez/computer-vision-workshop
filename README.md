@@ -119,11 +119,28 @@ Check `synset_words.txt` for the full list of 1000 valid labels.
 
 1. In your own words, explain why we preprocess the image with grayscale, blur, and edge detection before passing it to the model. What would happen if we skipped one of those steps?
 
+It reduces the image data to a manageable amount and allows for the data to be more parseable
+by the model. If this didn't happen, the data would be a larger tensor than necessary to process the
+proper classification.
+
 2. When you ran your classifier on an image, what did it predict and how confident was it? Did the result surprise you — and if it got something wrong, why do you think that happened?
+
+Due to time constraints and having to leave for a different meeting, 
+I couldn't finish implementing the classifier. However, I imagine that it was decently confident. But,
+with the decent amount of preprocessing done to reduce & feature extract the tensor data, I think
+there could be a decent chance it got some stuff wrong. With less-reduced data, I image it might
+be more accurate at the cost of compute.
 
 3. We focused on the top prediction (the supposed classification) — but the model outputs 1000 scores simultaneously. What does it mean that the scores for other classes are non-zero? What are those numbers telling you?
 
+Even with one best score, the other scores indicate confidence that it MIGHT be that thing.
+The fact they are non-zero means they have potential to be those labels.
+
 4. Where would you take this project next? Think about different models you could swap in, new kinds of images you'd want to classify, or features you'd add to make it more useful in the real world.
+
+One could do try fine-tuning a model; instead of just calling a model after preprocessing some data,
+I could work on trying to fine-tune a model for our particular dataset, such as something like
+ResNet50, by adding top layer(s) to further train our model to be accurate for our data.
 
 ## Reference Docs
 
